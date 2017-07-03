@@ -64,6 +64,7 @@ public class MusicUtils {
 //            Log.d("rq", "parentPath " + parentPath);
             music.setInitialLetter("#");
             allMusics.add(music);
+            cursor.close();
         }
         return allMusics;
     }
