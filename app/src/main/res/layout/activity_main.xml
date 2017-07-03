@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context="ren.test.goodlinessmusic.activity.MainActivity">
 
     <android.support.design.widget.TabLayout
-        android:id="@+id/table_layout"
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:tabSelectedTextColor="@android:color/background_dark"
+        app:tabTextColor="@android:color/darker_gray"
+        app:tabIndicatorColor="@android:color/background_dark"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/play_layout"
-        android:layout_below="@id/table_layout" />
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/tab_layout" />
 
     <RelativeLayout
         android:id="@+id/play_layout"

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:padding="10dp"
+    android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/song_item_head"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/head"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@id/song_item_head"
+        android:orientation="vertical">
+
+        <TextView
+            android:scrollHorizontally="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            android:id="@+id/song_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="天涯情歌"
+            android:textColor="@color/songColor" />
+
+        <TextView
+            android:id="@+id/song_item_singer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="周杰伦"
+            android:textColor="@color/singerColor"
+            android:textSize="13sp" />
+    </LinearLayout>
+</RelativeLayout>

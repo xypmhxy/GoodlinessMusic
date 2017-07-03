@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ren.test.goodlinessmusic.beans.Music;
@@ -60,11 +61,14 @@ public class MusicUtils {
                     .getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)); //唱片图片ID
             Music music = new Music(id, title, artist, duration, size, url, album, null, null, album_id, isMusic, null, parentPath, null, false, false);
             setContent(music);
-//            String initialLetter = Cn2Spell.getPinYinFirstLetter(music.getTittle());//调用工具类设置首字母
+            String initialLetter = Cn2Spell.getPinYinFirstLetter(music.getTittle());//调用工具类设置首字母
 //            Log.d("rq", "parentPath " + parentPath);
-            music.setInitialLetter("#");
+            music.setInitialLetter(initialLetter);
             allMusics.add(music);
         }
+        if (cursor != null)
+            cursor.close();
+        Collections.sort(allMusics);
         return allMusics;
     }
 
