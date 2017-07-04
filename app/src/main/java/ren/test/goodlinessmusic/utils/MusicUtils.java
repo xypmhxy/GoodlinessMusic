@@ -8,8 +8,14 @@ import android.provider.MediaStore;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import ren.test.goodlinessmusic.beans.Music;
 
 /**
@@ -18,14 +24,20 @@ import ren.test.goodlinessmusic.beans.Music;
 
 public class MusicUtils {
     private static List<Music> allMusics;
+    private static Map<String, String> singerMap;
 
     public static List<Music> getAllMusics(Context context) {
+        if (allMusics != null) {  //有数据直接返回避免多次查询
+            return allMusics;
+        }
+        queryFromSql(); //从本地数据库查询
+        queryFromSqlBySinger();//根据歌手进行查询分类
         if (allMusics != null)
             return allMusics;
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
-                MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+                MediaStore.Audio.Media.ARTIST+" DSC");
         allMusics = new ArrayList<>();
         while (cursor != null && cursor.moveToNext()) {
             long duration = cursor.getLong(cursor
@@ -45,6 +57,8 @@ public class MusicUtils {
 
             String artist = cursor.getString(cursor
                     .getColumnIndex(MediaStore.Audio.Media.ARTIST));//艺术家
+
+            singerMap.put(artist, artist);//将歌手添加到map方便查询
 
             long size = cursor.getLong(cursor
                     .getColumnIndex(MediaStore.Audio.Media.SIZE));  //文件大小
@@ -68,7 +82,8 @@ public class MusicUtils {
         }
         if (cursor != null)
             cursor.close();
-        Collections.sort(allMusics);
+        Collections.sort(allMusics);//根据首字母排序
+        insertToSql();
         return allMusics;
     }
 
@@ -84,5 +99,45 @@ public class MusicUtils {
         }
         music.setTittle(tittle);
         music.setArtist(artist);
+    }
+
+    /**
+     * 将查询的结果添加到本地数据库
+     */
+    private static void insertToSql() {
+        Realm realm = RealmUtils.getDefaultRealm();
+        realm.beginTransaction();
+        realm.insertOrUpdate(allMusics);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    /**
+     * 从本地数据库查询歌曲
+     */
+    private static void queryFromSql() {
+        Realm realm = RealmUtils.getDefaultRealm();
+        RealmQuery<Music> query = realm.where(Music.class);
+        allMusics = realm.copyFromRealm(query.findAll());
+        singerMap = new HashMap<>();
+        for (Music allMusic : allMusics) {
+            singerMap.put(allMusic.getArtist(), allMusic.getArtist());
+        }
+        realm.close();
+    }
+
+    /**
+     * 根据歌手进行分类查询
+     */
+    public static List<List<Music>> queryFromSqlBySinger() {
+        if (singerMap == null || singerMap.isEmpty())
+            return null;
+        Iterator<Map.Entry<String, String>> it = singerMap.entrySet().iterator();
+        List<List<Music>> singerMusics = new ArrayList<>();
+        while (it.hasNext()) {
+            String artist = it.next().getValue();
+            singerMusics.add(RealmUtils.query("artist", artist, "artist"));
+        }
+        return singerMusics;
     }
 }

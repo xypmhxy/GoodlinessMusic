@@ -24,7 +24,7 @@
         android:text="A"
         android:visibility="invisible" />
 
-    <ren.test.goodlinessmusic.view.SideBar
+    <ren.test.goodlinessmusic.widget.SideBar
         android:id="@+id/sidebar"
         android:layout_width="20dp"
         android:layout_height="match_parent"

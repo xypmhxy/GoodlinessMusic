@@ -1,4 +1,4 @@
-package ren.test.goodlinessmusic.view;
+package ren.test.goodlinessmusic.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -2,12 +2,16 @@ package ren.test.goodlinessmusic.beans;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by Administrator on 2017/4/1
  * 本地音乐实体类
  */
-public class Music implements Comparable<Music>, Serializable {
+public class Music extends RealmObject implements Comparable<Music>, Serializable {
     private static final long serialVersionUID = 1L;
+    @PrimaryKey
     private long id;
     private String tittle;
     private String artist;

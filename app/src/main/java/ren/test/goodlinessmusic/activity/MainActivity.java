@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ren.test.goodlinessmusic.R;
 import ren.test.goodlinessmusic.adapter.MainPagerAdapter;
+import ren.test.goodlinessmusic.fragment.SingerFragment;
 import ren.test.goodlinessmusic.fragment.SongFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         List<Fragment> fragments = new ArrayList<>();
         SongFragment songFragment = new SongFragment();
         fragments.add(songFragment);
-        SongFragment songFragment1 = new SongFragment();
+        SingerFragment songFragment1 = new SingerFragment();
         fragments.add(songFragment1);
         SongFragment songFragment2 = new SongFragment();
         fragments.add(songFragment2);
