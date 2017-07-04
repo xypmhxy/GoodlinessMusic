@@ -1,6 +1,7 @@
 package ren.test.goodlinessmusic.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.widget.SectionIndexer;
 
@@ -24,6 +25,14 @@ public class SingerAdapter extends BaseCommAdapter<List<Music>> implements Secti
 
     public SingerAdapter(List<List<Music>> datas, Context context) {
         super(datas, context);
+        int i=0;
+        for (List<Music> data : datas) {
+            Log.e("rq"," i  "+i);
+            for (Music music : data) {
+;                Log.d("rq","   "+music.getTittle());
+            }
+            i++;
+        }
         positionOfSection = new SparseIntArray();
         sectionOfPosition = new SparseIntArray();
         positionOfSection.put(0, 0);

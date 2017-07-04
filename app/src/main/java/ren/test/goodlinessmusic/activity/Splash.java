@@ -41,9 +41,9 @@ public class Splash extends Activity {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    intentMainActivity();
+                    getAllMusic();
                 }
-            }, 1500);
+            }, 1000);
         }
     }
 
@@ -70,10 +70,11 @@ public class Splash extends Activity {
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> e) throws Exception {
-                MusicUtils.getAllMusics(Splash.this);
+                MusicUtils.loadAllMusic(Splash.this);
+                MusicUtils.loadMusicsByArtist(Splash.this);
                 intentMainActivity();
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+        }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe();
     }
 
     /**

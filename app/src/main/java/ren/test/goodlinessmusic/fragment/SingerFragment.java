@@ -38,7 +38,7 @@ public class SingerFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        List<List<Music>> musics = MusicUtils.queryFromSqlBySinger();
+        List<List<Music>> musics = MusicUtils.getArtistMusics();
         SingerAdapter adapter = new SingerAdapter(musics, getActivity());
         listView.setAdapter(adapter);
         super.onActivityCreated(savedInstanceState);
