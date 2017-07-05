@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ren.test.goodlinessmusic.R;
 import ren.test.goodlinessmusic.adapter.SingerAdapter;
+import ren.test.goodlinessmusic.beans.Artist;
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.utils.MusicUtils;
 import ren.test.goodlinessmusic.widget.SideBar;
@@ -38,9 +39,10 @@ public class SingerFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        List<List<Music>> musics = MusicUtils.getArtistMusics();
-        SingerAdapter adapter = new SingerAdapter(musics, getActivity());
+        List<Artist> artists = MusicUtils.getArtistMusics();
+        SingerAdapter adapter = new SingerAdapter(artists, getActivity());
         listView.setAdapter(adapter);
+        sideBar.setListView(listView);
         super.onActivityCreated(savedInstanceState);
     }
 }

@@ -1,13 +1,19 @@
 package ren.test.goodlinessmusic.utils;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +27,8 @@ import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import ren.test.goodlinessmusic.beans.Album;
+import ren.test.goodlinessmusic.beans.Artist;
 import ren.test.goodlinessmusic.beans.Music;
 
 /**
@@ -29,14 +37,13 @@ import ren.test.goodlinessmusic.beans.Music;
 
 public class MusicUtils {
     private static List<Music> allMusics;
-    private static List<List<Music>> artistMusics;
-//    private static List<Music> allMusics;
-    private static Map<String, String> singerMap;
+    private static List<Artist> artists;
+    private static List<Album> albumList;
 
-    public static List<Music> queryMusics(Cursor cursor){
-        if (cursor==null)
+    public static List<Music> queryMusics(Cursor cursor) {
+        if (cursor == null)
             return null;
-       List<Music> musics = new ArrayList<>();
+        List<Music> musics = new ArrayList<>();
         while (cursor.moveToNext()) {
             long duration = cursor.getLong(cursor
                     .getColumnIndex(MediaStore.Audio.Media.DURATION));//时长
@@ -56,6 +63,9 @@ public class MusicUtils {
             String artist = cursor.getString(cursor
                     .getColumnIndex(MediaStore.Audio.Media.ARTIST));//艺术家
 
+            long artistId = cursor.getLong(cursor
+                    .getColumnIndex(MediaStore.Audio.Media.ARTIST_ID));//艺术家ID
+
             long size = cursor.getLong(cursor
                     .getColumnIndex(MediaStore.Audio.Media.SIZE));  //文件大小
 
@@ -69,107 +79,20 @@ public class MusicUtils {
 
             long album_id = cursor.getLong(cursor
                     .getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)); //唱片图片ID
-            Music music = new Music(id, title, artist, duration, size, url, album, null, null, album_id, isMusic, null, parentPath, null, false, false);
+            Music music = new Music(id, title, artist, artistId, duration, size, url, album, null, null, album_id, isMusic, null, parentPath, null, false, false);
             setContent(music);
             String initialLetter = Cn2Spell.getPinYinFirstLetter(music.getTittle());//调用工具类设置首字母
 //            Log.d("rq", "parentPath " + parentPath);
             music.setInitialLetter(initialLetter);
             musics.add(music);
+            music.setBigPic(getArtworkFromFile(music.getId())+"");
         }
         cursor.close();
         Collections.sort(musics);//根据首字母排序
-//        insertToSql();
         return musics;
 
     }
 
-    public static void loadAllMusic(Context context) {
-        queryFromSql(); //从本地数据库查询
-        if (!allMusics.isEmpty())
-            return;
-//        queryFromSqlBySinger();//根据歌手进行查询分类
-        ContentResolver contentResolver = context.getContentResolver();
-//        Cursor cursor = contentResolver.query(
-//                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, "1=1 )"+" group by "+"( "+"artist", null,null);
-        Cursor cursor = contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,null);
-        allMusics=queryMusics(cursor);
-        insertToSql();
-//        allMusics = new ArrayList<>();
-//        while (cursor != null && cursor.moveToNext()) {
-//            long duration = cursor.getLong(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.DURATION));//时长
-//
-//            int isMusic = cursor.getInt(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));//是否为音乐
-//
-//            if (isMusic == 0 || duration <= 150 * 1000)
-//                continue;
-//
-//            long id = cursor.getLong(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media._ID));//音乐id
-//
-//            String title = cursor.getString((cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.TITLE)));//音乐标题
-//
-//            String artist = cursor.getString(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.ARTIST));//艺术家
-//
-////            singerMap.put(artist, artist);//将歌手添加到map方便查询
-//
-//            long size = cursor.getLong(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.SIZE));  //文件大小
-//
-//            String url = cursor.getString(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.DATA));  //文件路径
-//
-//            String parentPath = url.substring(0, url.lastIndexOf(File.separator));//文件父目录
-//
-//            String album = cursor.getString(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.ALBUM)); //唱片图片
-//
-//            long album_id = cursor.getLong(cursor
-//                    .getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)); //唱片图片ID
-//            Music music = new Music(id, title, artist, duration, size, url, album, null, null, album_id, isMusic, null, parentPath, null, false, false);
-//            setContent(music);
-//            String initialLetter = Cn2Spell.getPinYinFirstLetter(music.getTittle());//调用工具类设置首字母
-////            Log.d("rq", "parentPath " + parentPath);
-//            music.setInitialLetter(initialLetter);
-//            allMusics.add(music);
-//        }
-//        if (cursor != null)
-//            cursor.close();
-//        Collections.sort(allMusics);//根据首字母排序
-    }
-
-
-    public static List<Music> getAllMusics(){
-        return allMusics;
-    }
-
-    public static void loadMusicsByArtist(Context context){
-        Realm realm = RealmUtils.getDefaultRealm();
-        RealmQuery<Music> query = realm.where(Music.class);
-        RealmResults<Music>result=query.distinct("artist").sort("artist");
-        List<Music>list=realm.copyFromRealm(result);
-        realm.close();
-        realm= RealmUtils.getDefaultRealm();
-        query = realm.where(Music.class);
-        artistMusics=new ArrayList<>();
-        for (Music music : list) {
-            String artist=music.getArtist();
-            RealmResults<Music>musics=query.equalTo("artist"  ,"").or().equalTo("artist"  ,artist).findAll();
-            List<Music>mmm=realm.copyFromRealm(musics);
-            artistMusics.add(mmm);
-        }
-//        list.clear();
-//        list=null;
-        realm.close();
-    }
-
-    public static List<List<Music>> getArtistMusics(){
-        return artistMusics;
-    }
     /**
      * 判断显示的歌曲名和歌手
      */
@@ -184,15 +107,31 @@ public class MusicUtils {
         music.setArtist(artist);
     }
 
-    /**
-     * 将查询的结果添加到本地数据库
-     */
-    private static void insertToSql() {
-        Realm realm = RealmUtils.getDefaultRealm();
-        realm.beginTransaction();
-        realm.copyToRealm(allMusics);
-        realm.commitTransaction();
-        realm.close();
+    private static Uri getArtworkFromFile(long songid) {
+        Bitmap bm = null;
+        if (songid < 0) {
+            return null;
+        }
+        try {
+            Uri uri = Uri.parse("content://media/external/audio/media/" + songid + "/albumart");
+            return uri;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void loadAllMusic(Context context) {
+        queryFromSql(); //从本地数据库查询
+        if (!allMusics.isEmpty())
+            return;
+        ContentResolver contentResolver = context.getContentResolver();
+//        Cursor cursor = contentResolver.query(
+//                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, "1=1 )"+" group by "+"( "+"artist", null,null);
+        Cursor cursor = contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+        allMusics = queryMusics(cursor);
+        insertToSql();
     }
 
     /**
@@ -202,25 +141,73 @@ public class MusicUtils {
         Realm realm = RealmUtils.getDefaultRealm();
         RealmQuery<Music> query = realm.where(Music.class);
         allMusics = realm.copyFromRealm(query.findAll());
-//        singerMap = new HashMap<>();
-//        for (Music allMusic : allMusics) {
-//            singerMap.put(allMusic.getArtist(), allMusic.getArtist());
-//        }
         realm.close();
     }
 
     /**
-     * 根据歌手进行分类查询
+     * 将查询的结果添加到本地数据库
      */
-    public static List<List<Music>> queryFromSqlBySinger() {
-        if (singerMap == null || singerMap.isEmpty())
-            return null;
-        Iterator<Map.Entry<String, String>> it = singerMap.entrySet().iterator();
-        List<List<Music>> singerMusics = new ArrayList<>();
-        while (it.hasNext()) {
-            String artist = it.next().getValue();
-            singerMusics.add(RealmUtils.query("artist", artist, "artist"));
+    private static void insertToSql() {
+        Realm realm = RealmUtils.getDefaultRealm();
+        realm.beginTransaction();
+        realm.copyToRealm(allMusics);
+        for (Music music : allMusics) {
+            saveArtistOrAlbum(music,realm);
         }
-        return singerMusics;
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    private static void saveArtistOrAlbum(Music music, Realm realm) {
+        Artist artist = realm.where(Artist.class).equalTo("artist", music.getArtist()).or().equalTo("artist", music.getArtist()).findFirst();
+        if (artist == null) {
+            artist = new Artist();
+            artist.setId(music.getArtistId());
+        }
+        artist.setArtist(music.getArtist());
+        artist.setNumber(artist.getNumber() + 1);
+        String initialLetter = Cn2Spell.getPinYinFirstLetter(artist.getArtist());//调用工具类设置首字母
+        artist.setInitialLetter(initialLetter);
+        artist.setHeadUrl("null");
+        realm.insertOrUpdate(artist);
+
+        Album album = realm.where(Album.class).equalTo("singer", music.getArtist()).or().equalTo("singer", music.getArtist()).findFirst();
+        if (album == null) {
+            album = new Album();
+            album.setAlbumId(music.getAlbumId());
+        }
+        album.setSinger(music.getArtist());
+        album.setNumber(album.getNumber() + 1);
+        album.setAlbumName(music.getAlbumImage());
+        String initialLetter_ = Cn2Spell.getPinYinFirstLetter(album.getAlbumName());//调用工具类设置首字母
+        album.setInitialLetter(initialLetter_);
+        String albumImg = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), album.getAlbumId()) + "";
+        album.setHeadUrl(albumImg);
+        realm.insertOrUpdate(album);
+    }
+
+    public static List<Music> getAllMusics() {
+        return allMusics;
+    }
+    public static void loadMusicsByArtist() {
+        Realm realm = RealmUtils.getDefaultRealm();
+        RealmQuery<Artist> query = realm.where(Artist.class);
+        artists = realm.copyFromRealm(query.findAll());
+        Collections.sort(artists);
+        realm.close();
+    }
+    public static List<Artist> getArtistMusics() {
+        return artists;
+    }
+
+    public static void loadAlbum(){
+        Realm realm = RealmUtils.getDefaultRealm();
+        RealmQuery<Album> query = realm.where(Album.class);
+        albumList=realm.copyFromRealm(query.findAll());
+        Collections.sort(albumList);
+        realm.close();
+    }
+    public static List<Album> getAlbumList() {
+        return albumList;
     }
 }

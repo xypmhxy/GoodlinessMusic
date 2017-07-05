@@ -1,7 +1,6 @@
 package ren.test.goodlinessmusic.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.widget.SectionIndexer;
 
@@ -9,30 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ren.test.goodlinessmusic.R;
-import ren.test.goodlinessmusic.beans.Music;
+import ren.test.goodlinessmusic.beans.Artist;
 import ren.test.goodlinessmusic.holder.ViewHolder;
 
 /**
  * Created by Administrator on 2017/07/03
  */
 
-public class SingerAdapter extends BaseCommAdapter<List<Music>> implements SectionIndexer {
+public class SingerAdapter extends BaseCommAdapter<Artist> implements SectionIndexer {
 
     private SparseIntArray positionOfSection;
     private SparseIntArray sectionOfPosition;
     private List<String> stringList;
     private String[] strs;
 
-    public SingerAdapter(List<List<Music>> datas, Context context) {
+    public SingerAdapter(List<Artist> datas, Context context) {
         super(datas, context);
-        int i=0;
-        for (List<Music> data : datas) {
-            Log.e("rq"," i  "+i);
-            for (Music music : data) {
-;                Log.d("rq","   "+music.getTittle());
-            }
-            i++;
-        }
         positionOfSection = new SparseIntArray();
         sectionOfPosition = new SparseIntArray();
         positionOfSection.put(0, 0);
@@ -43,8 +34,9 @@ public class SingerAdapter extends BaseCommAdapter<List<Music>> implements Secti
 
     @Override
     protected void setUI(ViewHolder holder, int position, Context context) {
-        holder.setText(R.id.song_item_name, getItem(position).get(0).getArtist());
-        holder.setText(R.id.song_item_singer, getItem(position).size() + " 首");
+        holder.setText(R.id.song_item_name, getItem(position).getArtist());
+        holder.setText(R.id.song_item_singer, getItem(position).getNumber() + " 首");
+        holder.setImage(R.id.song_item_head, getItem(position).getHeadUrl());
     }
 
     @Override
@@ -60,7 +52,7 @@ public class SingerAdapter extends BaseCommAdapter<List<Music>> implements Secti
             return stringList.toArray(strs);
         int count = getCount();
         for (int i = 1; i < count; i++) {
-            String letter = getItem(i).get(0).getInitialLetter();
+            String letter = getItem(i).getInitialLetter();
             int section = stringList.size() - 1;
             if (stringList.get(section) != null && !stringList.get(section).equals(letter)) {
                 stringList.add(letter);

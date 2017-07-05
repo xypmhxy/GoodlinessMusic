@@ -41,7 +41,7 @@ public class Splash extends Activity {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    getAllMusic();
+                    loadMusicData();
                 }
             }, 1000);
         }
@@ -57,7 +57,7 @@ public class Splash extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            getAllMusic();
+            loadMusicData();
         else
             Toast.makeText(this, "您已拒绝获取本地音乐，请在手机中重新打开获取", Toast.LENGTH_SHORT).show();
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -66,12 +66,13 @@ public class Splash extends Activity {
     /**
      * 获取本地所有音乐并跳转
      */
-    private void getAllMusic() {
+    private void loadMusicData() {
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> e) throws Exception {
                 MusicUtils.loadAllMusic(Splash.this);
-                MusicUtils.loadMusicsByArtist(Splash.this);
+                MusicUtils.loadMusicsByArtist();
+                MusicUtils.loadAlbum();
                 intentMainActivity();
             }
         }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe();

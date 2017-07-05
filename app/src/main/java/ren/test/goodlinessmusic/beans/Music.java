@@ -15,6 +15,7 @@ public class Music extends RealmObject implements Comparable<Music>, Serializabl
     private long id;
     private String tittle;
     private String artist;
+    private long artistId;
     private long duration;
     private long size;
     private String url;
@@ -29,13 +30,14 @@ public class Music extends RealmObject implements Comparable<Music>, Serializabl
     private boolean isrecentPlay;
     private boolean isFavorite;
 
-    public Music(long id, String tittle, String artist, long duration, long size, String url,
+    public Music(long id, String tittle, String artist,long artistId, long duration, long size, String url,
                  String albumImage, String smallPic, String bigPic, long albumId, int isMusci,
                  String initialLetter, String parentPath, String playTime, boolean isrecentPlay,
                  boolean isFavorite) {
         this.id = id;
         this.tittle = tittle;
         this.artist = artist;
+        this.artistId=artistId;
         this.duration = duration;
         this.size = size;
         this.url = url;
@@ -129,6 +131,14 @@ public class Music extends RealmObject implements Comparable<Music>, Serializabl
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public long getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(long artistId) {
+        this.artistId = artistId;
     }
 
     public String getTittle() {

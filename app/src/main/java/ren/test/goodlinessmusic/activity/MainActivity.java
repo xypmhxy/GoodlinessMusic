@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ren.test.goodlinessmusic.R;
 import ren.test.goodlinessmusic.adapter.MainPagerAdapter;
+import ren.test.goodlinessmusic.fragment.AlbumFragment;
 import ren.test.goodlinessmusic.fragment.SingerFragment;
 import ren.test.goodlinessmusic.fragment.SongFragment;
 
@@ -39,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     private void initFragment() {
         List<Fragment> fragments = new ArrayList<>();
         SongFragment songFragment = new SongFragment();
+        SingerFragment singerFragment = new SingerFragment();
+        AlbumFragment albumFragment = new AlbumFragment();
         fragments.add(songFragment);
-        SingerFragment songFragment1 = new SingerFragment();
-        fragments.add(songFragment1);
-        SongFragment songFragment2 = new SongFragment();
-        fragments.add(songFragment2);
+        fragments.add(singerFragment);
+        fragments.add(albumFragment);
         MainPagerAdapter adapter = new MainPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
     }

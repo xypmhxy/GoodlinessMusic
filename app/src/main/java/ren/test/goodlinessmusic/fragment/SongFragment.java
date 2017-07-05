@@ -54,18 +54,7 @@ public class SongFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         musics = MusicUtils.getAllMusics();
-        SongAdapter adapter = new SongAdapter(musics, getActivity()) {
-            @Override
-            protected void setUI(ViewHolder holder, int position, Context context) {
-                holder.setText(R.id.song_item_name, getItem(position).getTittle());
-                holder.setText(R.id.song_item_singer, getItem(position).getArtist());
-            }
-
-            @Override
-            protected int getLayoutId() {
-                return R.layout.song_listview_item;
-            }
-        };
+        SongAdapter adapter = new SongAdapter(musics, getActivity());
         listView.setAdapter(adapter);
         sideBar.setListView(listView);
         musicPresenter = new PlayMusicPresenter(this);

@@ -1,10 +1,15 @@
 package ren.test.goodlinessmusic.holder;
 
+import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import butterknife.ButterKnife;
+import ren.test.goodlinessmusic.R;
 
 
 /**
@@ -35,8 +40,7 @@ public class ViewHolder {
 
     public void setImage(int id,String url){
         ImageView imageView= getWidget(id);
-//        imageView.setimage
+        Log.d("rq","url "+url);
+        Picasso.with(mConvertView.getContext()).load(url).error(R.drawable.head).into(imageView);
     }
-
-
 }

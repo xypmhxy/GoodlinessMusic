@@ -8,21 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ren.test.goodlinessmusic.R;
-import ren.test.goodlinessmusic.beans.Music;
+import ren.test.goodlinessmusic.beans.Album;
+import ren.test.goodlinessmusic.beans.Artist;
 import ren.test.goodlinessmusic.holder.ViewHolder;
 
 /**
  * Created by Administrator on 2017/07/03
  */
 
-public class SongAdapter extends BaseCommAdapter<Music>implements SectionIndexer {
+public class AlbumAdapter extends BaseCommAdapter<Album> implements SectionIndexer {
 
     private SparseIntArray positionOfSection;
     private SparseIntArray sectionOfPosition;
     private List<String> stringList;
-    private String []strs;
+    private String[] strs;
 
-    public SongAdapter(List<Music> datas, Context context) {
+    public AlbumAdapter(List<Album> datas, Context context) {
         super(datas, context);
         positionOfSection = new SparseIntArray();
         sectionOfPosition = new SparseIntArray();
@@ -34,9 +35,9 @@ public class SongAdapter extends BaseCommAdapter<Music>implements SectionIndexer
 
     @Override
     protected void setUI(ViewHolder holder, int position, Context context) {
-        holder.setText(R.id.song_item_name, getItem(position).getTittle());
-        holder.setText(R.id.song_item_singer, getItem(position).getArtist());
-        holder.setImage(R.id.song_item_head,getItem(position).getBigPic());
+        holder.setText(R.id.song_item_name, getItem(position).getAlbumName());
+        holder.setText(R.id.song_item_singer, getItem(position).getNumber() + " 首");
+        holder.setImage(R.id.song_item_head, getItem(position).getHeadUrl());
     }
 
     @Override
@@ -46,11 +47,11 @@ public class SongAdapter extends BaseCommAdapter<Music>implements SectionIndexer
 
     @Override
     public String[] getSections() {
-        if (strs==null)
-            strs=new String[stringList.size()];
+        if (strs == null)
+            strs = new String[stringList.size()];
         else
             return stringList.toArray(strs);
-        int count=getCount();
+        int count = getCount();
         for (int i = 1; i < count; i++) {
             String letter = getItem(i).getInitialLetter();
             int section = stringList.size() - 1;
