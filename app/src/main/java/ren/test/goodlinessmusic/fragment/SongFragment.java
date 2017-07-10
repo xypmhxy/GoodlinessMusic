@@ -57,17 +57,17 @@ public class SongFragment extends Fragment implements AdapterView.OnItemClickLis
         SongAdapter adapter = new SongAdapter(musics, getActivity());
         listView.setAdapter(adapter);
         sideBar.setListView(listView);
-        musicPresenter = new PlayMusicPresenter(this);
+//        musicPresenter = new PlayMusicPresenter(this,null);
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        musicPresenter.play();
+//        musicPresenter.play();
     }
 
     @Override
-    public void onPlay() {
+    public void onPlay(Music music) {
 
     }
 

@@ -1,6 +1,14 @@
 package ren.test.goodlinessmusic.presenter;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+
+import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.impl.IPlayMusicImp;
+import ren.test.goodlinessmusic.manager.PlayManager;
+import ren.test.goodlinessmusic.service.MusicService;
 import ren.test.goodlinessmusic.view.IPlayMusicView;
 
 /**
@@ -10,15 +18,28 @@ import ren.test.goodlinessmusic.view.IPlayMusicView;
 public class PlayMusicPresenter {
     private IPlayMusicView playMusicView;
     private IPlayMusicImp playMusicImp;
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                Music music = (Music) intent.getSerializableExtra("music");
+                String action = intent.getAction();
+                if (action.equals(PlayManager.MUSIC_INFO))
+                    playMusicView.onPlay(music);
+            }
+        }
+    };
 
-    public PlayMusicPresenter(IPlayMusicView playMusicView) {
+    public PlayMusicPresenter(IPlayMusicView playMusicView, MusicService service) {
         this.playMusicView = playMusicView;
-        playMusicImp = new IPlayMusicImp();
+        playMusicImp = new IPlayMusicImp(service);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PlayManager.MUSIC_INFO);
+        service.getApplicationContext().registerReceiver(receiver, filter);
     }
 
-    public void play() {
-        playMusicImp.play();
-        playMusicView.onPlay();
+    public void play(Music music) {
+        playMusicImp.play(music);
     }
 
     public void pause() {

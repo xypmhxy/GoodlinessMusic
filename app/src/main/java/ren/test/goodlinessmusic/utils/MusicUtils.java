@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Binder;
+import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -39,6 +41,12 @@ public class MusicUtils {
     private static List<Music> allMusics;
     private static List<Artist> artists;
     private static List<Album> albumList;
+
+    public static Music getRecentMusic() {
+        Realm realm = RealmUtils.getDefaultRealm();
+        RealmQuery<Music> query = realm.where(Music.class);
+        return query.equalTo("isrecentPlay", true).or().equalTo("isrecentPlay", true).findAllSorted("playTime", Sort.DESCENDING).first(null);
+    }
 
     public static List<Music> queryMusics(Cursor cursor) {
         if (cursor == null)
@@ -85,7 +93,7 @@ public class MusicUtils {
 //            Log.d("rq", "parentPath " + parentPath);
             music.setInitialLetter(initialLetter);
             musics.add(music);
-            music.setBigPic(getArtworkFromFile(music.getId())+"");
+            music.setBigPic(getArtworkFromFile(music.getId()) + "");
         }
         cursor.close();
         Collections.sort(musics);//根据首字母排序
@@ -152,7 +160,7 @@ public class MusicUtils {
         realm.beginTransaction();
         realm.copyToRealm(allMusics);
         for (Music music : allMusics) {
-            saveArtistOrAlbum(music,realm);
+            saveArtistOrAlbum(music, realm);
         }
         realm.commitTransaction();
         realm.close();
@@ -189,6 +197,7 @@ public class MusicUtils {
     public static List<Music> getAllMusics() {
         return allMusics;
     }
+
     public static void loadMusicsByArtist() {
         Realm realm = RealmUtils.getDefaultRealm();
         RealmQuery<Artist> query = realm.where(Artist.class);
@@ -196,17 +205,19 @@ public class MusicUtils {
         Collections.sort(artists);
         realm.close();
     }
+
     public static List<Artist> getArtistMusics() {
         return artists;
     }
 
-    public static void loadAlbum(){
+    public static void loadAlbum() {
         Realm realm = RealmUtils.getDefaultRealm();
         RealmQuery<Album> query = realm.where(Album.class);
-        albumList=realm.copyFromRealm(query.findAll());
+        albumList = realm.copyFromRealm(query.findAll());
         Collections.sort(albumList);
         realm.close();
     }
+
     public static List<Album> getAlbumList() {
         return albumList;
     }
