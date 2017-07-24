@@ -3,17 +3,12 @@ package ren.test.goodlinessmusic.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PersistableBundle;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -33,11 +28,9 @@ import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.fragment.AlbumFragment;
 import ren.test.goodlinessmusic.fragment.SingerFragment;
 import ren.test.goodlinessmusic.fragment.SongFragment;
-import ren.test.goodlinessmusic.manager.MusicNotificationManager;
 import ren.test.goodlinessmusic.manager.PlayManager;
 import ren.test.goodlinessmusic.presenter.PlayMusicPresenter;
 import ren.test.goodlinessmusic.service.MusicService;
-import ren.test.goodlinessmusic.utils.MusicUtils;
 import ren.test.goodlinessmusic.view.IPlayMusicView;
 
 public class MainActivity extends AppCompatActivity implements IPlayMusicView {
@@ -50,11 +43,14 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
     public TextView songName;
     @BindView(R.id.text_singer)
     public TextView singer;
+    @BindView(R.id.image_play)
+    public ImageView playOrPause;
 
     private PlayMusicPresenter presenter;
     private SongFragment songFragment;
     private SingerFragment singerFragment;
     private Unbinder unbinder;
+    private ServiceConnection connection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         initFragment();
         tabLayout.setupWithViewPager(viewPager);
         startService();
-        initNotification();
+//        initNotification();
     }
 
     /**
@@ -81,18 +77,16 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         MainPagerAdapter adapter = new MainPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
     }
-    ServiceConnection connection;
+
     private void startService() {
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
-        intent = new Intent(this, MusicService.class);
          connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
                 setSupportMediaController(binder.getController());
                 presenter = new PlayMusicPresenter(MainActivity.this, getSupportMediaController(),MainActivity.this);
-                songFragment.initPresenter();
                 Toast.makeText(MainActivity.this, "绑定服务已经启动 " + binder, Toast.LENGTH_SHORT).show();
             }
 
@@ -130,11 +124,12 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         songName.setText(music.getTittle());
         singer.setText(music.getArtist());
         Toast.makeText(this, music.getTittle() + " 开始播放", Toast.LENGTH_SHORT).show();
+        playOrPause.setImageResource(R.drawable.pause);
     }
 
     @Override
     public void onPause_() {
-
+        playOrPause.setImageResource(R.drawable.play);
     }
 
     @Override

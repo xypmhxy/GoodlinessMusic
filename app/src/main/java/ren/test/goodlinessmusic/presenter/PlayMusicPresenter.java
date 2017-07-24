@@ -1,11 +1,7 @@
 package ren.test.goodlinessmusic.presenter;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v4.media.session.MediaControllerCompat;
 
 import ren.test.goodlinessmusic.beans.Music;
@@ -26,8 +22,8 @@ public class PlayMusicPresenter {
     public PlayMusicPresenter(IPlayMusicView playMusicView, MediaControllerCompat mediaControllerCompat, Context context) {
         playMusicImp = new IPlayMusicImp(mediaControllerCompat);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(PlayManager.MUSIC_INFO);
-         receiver=new MusicStateBroadcast(playMusicView);
+        filter.addAction(PlayManager.ACTION_MUSIC_INFO);
+        receiver=new MusicStateBroadcast(playMusicView);
         context.registerReceiver(receiver, filter);
         this.context=context;
     }

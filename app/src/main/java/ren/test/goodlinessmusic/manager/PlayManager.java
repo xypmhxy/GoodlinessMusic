@@ -3,13 +3,11 @@ package ren.test.goodlinessmusic.manager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import ren.test.goodlinessmusic.application.MusicApplication;
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.utils.MusicUtils;
 
@@ -18,9 +16,12 @@ import ren.test.goodlinessmusic.utils.MusicUtils;
  */
 
 public class PlayManager implements MediaPlayer.OnCompletionListener {
-    public static final String MUSIC_INFO = "musicInfo";
-    public static final String MUSIC_TITTLE = "musicInfo";
-    public static final String MUSIC_ = "musicInfo";
+    public static final String ACTION_MUSIC_INFO = "musicInfo";
+    public static final String KEY_STATE = "state";
+    public static final String KEY_MUSIC_INFO = "music";
+    public static final int STATE_PLAING = 1;
+    public static final int STATE_PAUSE = 2;
+    public static final int STATE_STOP = 3;
     private static PlayManager playManager;
     private WeakReference<Context> context;
     private MediaPlayer mediaPlayer;
@@ -67,7 +68,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
             currentMusic = music;
             currentMusic.setPlayTime(System.currentTimeMillis() + "");
             MusicUtils.insert(currentMusic);
-            sendBroadCast();
+            sendBroadCast(STATE_PLAING);
             isPause = false;
             if (currentPosition != -1) {
                 return;
@@ -86,6 +87,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             isPause = true;
+            sendBroadCast(STATE_PAUSE);
         }
     }
 
@@ -93,14 +95,16 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
         if (!mediaPlayer.isPlaying() && isPause)
             mediaPlayer.start();
         isPause = false;
+        sendBroadCast(STATE_PLAING);
     }
 
-    private void sendBroadCast() {
+    private void sendBroadCast(int state) {
         if (intent == null) {
             intent = new Intent();
-            intent.setAction(MUSIC_INFO);
+            intent.setAction(ACTION_MUSIC_INFO);
         }
-        intent.putExtra("music", currentMusic);
+        intent.putExtra(KEY_MUSIC_INFO, currentMusic);
+        intent.putExtra(KEY_STATE, state);
         context.get().sendBroadcast(intent);
     }
 

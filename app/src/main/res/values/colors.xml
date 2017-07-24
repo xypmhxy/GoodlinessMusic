@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000</color>
     <color name="songColor">#262626</color>
     <color name="singerColor">#838383</color>
 </resources>

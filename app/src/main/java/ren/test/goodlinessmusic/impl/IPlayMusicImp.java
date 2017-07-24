@@ -1,19 +1,12 @@
 package ren.test.goodlinessmusic.impl;
 
-import android.media.MediaMetadata;
-import android.media.MediaMetadataRetriever;
-import android.media.session.MediaController;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.manager.PlayManager;
 import ren.test.goodlinessmusic.model.IPlayMusic;
 import ren.test.goodlinessmusic.service.MusicService;
-import ren.test.goodlinessmusic.utils.MusicUtils;
 
 /**
  * Created by Administrator on 2017/7/4
@@ -24,7 +17,6 @@ public class IPlayMusicImp implements IPlayMusic {
 
     public IPlayMusicImp(MediaControllerCompat mediaControllerCompat) {
         this.mediaControllerCompat = mediaControllerCompat;
-
     }
 
     @Override
