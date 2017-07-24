@@ -4,11 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v4.media.session.MediaControllerCompat;
 
 import ren.test.goodlinessmusic.beans.Music;
+import ren.test.goodlinessmusic.broadcast.MusicStateBroadcast;
 import ren.test.goodlinessmusic.impl.IPlayMusicImp;
 import ren.test.goodlinessmusic.manager.PlayManager;
-import ren.test.goodlinessmusic.service.MusicService;
 import ren.test.goodlinessmusic.view.IPlayMusicView;
 
 /**
@@ -16,26 +19,17 @@ import ren.test.goodlinessmusic.view.IPlayMusicView;
  */
 
 public class PlayMusicPresenter {
-    private IPlayMusicView playMusicView;
     private IPlayMusicImp playMusicImp;
-    BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                Music music = (Music) intent.getSerializableExtra("music");
-                String action = intent.getAction();
-                if (action.equals(PlayManager.MUSIC_INFO))
-                    playMusicView.onPlay(music);
-            }
-        }
-    };
+    private Context context;
+    private MusicStateBroadcast receiver;
 
-    public PlayMusicPresenter(IPlayMusicView playMusicView, MusicService service) {
-        this.playMusicView = playMusicView;
-        playMusicImp = new IPlayMusicImp(service);
+    public PlayMusicPresenter(IPlayMusicView playMusicView, MediaControllerCompat mediaControllerCompat, Context context) {
+        playMusicImp = new IPlayMusicImp(mediaControllerCompat);
         IntentFilter filter = new IntentFilter();
         filter.addAction(PlayManager.MUSIC_INFO);
-        service.getApplicationContext().registerReceiver(receiver, filter);
+         receiver=new MusicStateBroadcast(playMusicView);
+        context.registerReceiver(receiver, filter);
+        this.context=context;
     }
 
     public void play(Music music) {
@@ -44,16 +38,19 @@ public class PlayMusicPresenter {
 
     public void pause() {
         playMusicImp.pause();
-        playMusicView.onPause_();
+//        playMusicView.onPause_();
     }
 
     public void last() {
         playMusicImp.last();
-        playMusicView.onLast();
+//        playMusicView.onLast();
     }
 
     public void next() {
         playMusicImp.next();
-        playMusicView.onNext();
+//        playMusicView.onNext();
+    }
+    public void unregister(){
+        context.unregisterReceiver(receiver);
     }
 }

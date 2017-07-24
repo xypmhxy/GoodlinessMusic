@@ -83,6 +83,8 @@ public class Splash extends Activity {
      */
     private void intentMainActivity() {
         Intent intent = new Intent(Splash.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
     }

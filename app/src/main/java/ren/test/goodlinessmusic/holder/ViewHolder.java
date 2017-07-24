@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -40,7 +41,6 @@ public class ViewHolder {
 
     public void setImage(int id,String url){
         ImageView imageView= getWidget(id);
-        Log.d("rq","url "+url);
-        Picasso.with(mConvertView.getContext()).load(url).error(R.drawable.head).into(imageView);
+        Picasso.with(mConvertView.getContext()).load(url).placeholder(R.drawable.head).error(R.drawable.head).into(imageView);
     }
 }

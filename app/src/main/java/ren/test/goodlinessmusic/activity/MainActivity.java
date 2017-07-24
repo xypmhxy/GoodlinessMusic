@@ -3,8 +3,11 @@ package ren.test.goodlinessmusic.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -23,12 +26,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import ren.test.goodlinessmusic.R;
 import ren.test.goodlinessmusic.adapter.MainPagerAdapter;
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.fragment.AlbumFragment;
 import ren.test.goodlinessmusic.fragment.SingerFragment;
 import ren.test.goodlinessmusic.fragment.SongFragment;
+import ren.test.goodlinessmusic.manager.MusicNotificationManager;
+import ren.test.goodlinessmusic.manager.PlayManager;
 import ren.test.goodlinessmusic.presenter.PlayMusicPresenter;
 import ren.test.goodlinessmusic.service.MusicService;
 import ren.test.goodlinessmusic.utils.MusicUtils;
@@ -46,16 +52,19 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
     public TextView singer;
 
     private PlayMusicPresenter presenter;
-    private MusicService musicService;
+    private SongFragment songFragment;
+    private SingerFragment singerFragment;
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        unbinder=ButterKnife.bind(this);
         initFragment();
         tabLayout.setupWithViewPager(viewPager);
         startService();
+        initNotification();
     }
 
     /**
@@ -63,8 +72,8 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
      */
     private void initFragment() {
         List<Fragment> fragments = new ArrayList<>();
-        SongFragment songFragment = new SongFragment();
-        SingerFragment singerFragment = new SingerFragment();
+        songFragment = new SongFragment();
+        singerFragment = new SingerFragment();
         AlbumFragment albumFragment = new AlbumFragment();
         fragments.add(songFragment);
         fragments.add(singerFragment);
@@ -72,24 +81,31 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         MainPagerAdapter adapter = new MainPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
     }
-
+    ServiceConnection connection;
     private void startService() {
         Intent intent = new Intent(this, MusicService.class);
-        ServiceConnection connection = new ServiceConnection() {
+        startService(intent);
+        intent = new Intent(this, MusicService.class);
+         connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-                musicService = binder.getService();
-                presenter = new PlayMusicPresenter(MainActivity.this, musicService);
-                Toast.makeText(MainActivity.this, "绑定服务已经启动 " + musicService, Toast.LENGTH_SHORT).show();
+                setSupportMediaController(binder.getController());
+                presenter = new PlayMusicPresenter(MainActivity.this, getSupportMediaController(),MainActivity.this);
+                songFragment.initPresenter();
+                Toast.makeText(MainActivity.this, "绑定服务已经启动 " + binder, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                Toast.makeText(MainActivity.this, "绑定服务已经关闭 " + musicService, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "绑定服务已经关闭 " + name, Toast.LENGTH_SHORT).show();
             }
         };
         bindService(intent, connection, BIND_AUTO_CREATE);
+    }
+
+    private void initNotification(){
+//        MusicNotificationManager.getInstance(this);
     }
 
     /**
@@ -106,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
 
     @OnClick(R.id.image_play)
     public void onClick(View view) {
-        presenter.play(MusicUtils.getAllMusics().get(0));
+        presenter.play(PlayManager.getInstance(this).getCurrentMusic());
     }
 
     @Override
@@ -129,5 +145,18 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
     @Override
     public void onNext() {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbinder.unbind();
+        presenter.unregister();
+        unbindService(connection);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

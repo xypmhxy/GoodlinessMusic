@@ -45,7 +45,17 @@ public class MusicUtils {
     public static Music getRecentMusic() {
         Realm realm = RealmUtils.getDefaultRealm();
         RealmQuery<Music> query = realm.where(Music.class);
-        return query.equalTo("isrecentPlay", true).or().equalTo("isrecentPlay", true).findAllSorted("playTime", Sort.DESCENDING).first(null);
+        Music music=query.equalTo("isrecentPlay", true).or().equalTo("isrecentPlay", true).findAllSorted("playTime", Sort.DESCENDING).first(null);
+        realm.close();
+        return music;
+    }
+
+    public static void insert(Music music){
+        Realm realm = RealmUtils.getDefaultRealm();
+        realm.beginTransaction();
+        realm.insertOrUpdate(music);
+        realm.commitTransaction();
+        realm.close();
     }
 
     public static List<Music> queryMusics(Cursor cursor) {
@@ -116,7 +126,6 @@ public class MusicUtils {
     }
 
     private static Uri getArtworkFromFile(long songid) {
-        Bitmap bm = null;
         if (songid < 0) {
             return null;
         }

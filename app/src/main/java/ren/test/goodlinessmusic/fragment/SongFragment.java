@@ -4,12 +4,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -18,6 +20,7 @@ import ren.test.goodlinessmusic.R;
 import ren.test.goodlinessmusic.adapter.SongAdapter;
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.holder.ViewHolder;
+import ren.test.goodlinessmusic.manager.PlayManager;
 import ren.test.goodlinessmusic.presenter.PlayMusicPresenter;
 import ren.test.goodlinessmusic.utils.MusicUtils;
 import ren.test.goodlinessmusic.view.IPlayMusicView;
@@ -40,6 +43,7 @@ public class SongFragment extends Fragment implements AdapterView.OnItemClickLis
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d("rq"," "+System.currentTimeMillis());
         View view = inflater.inflate(R.layout.framgent_song, null);
         ButterKnife.bind(this, view);
         return view;
@@ -54,16 +58,20 @@ public class SongFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         musics = MusicUtils.getAllMusics();
+        PlayManager.getInstance(getActivity()).setMusicList(musics);
         SongAdapter adapter = new SongAdapter(musics, getActivity());
         listView.setAdapter(adapter);
         sideBar.setListView(listView);
-//        musicPresenter = new PlayMusicPresenter(this,null);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    public void initPresenter(){
+        musicPresenter=new PlayMusicPresenter(this,getActivity().getSupportMediaController(),getActivity());
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        musicPresenter.play();
+        musicPresenter.play(musics.get(position));
     }
 
     @Override
@@ -84,5 +92,11 @@ public class SongFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onNext() {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        musicPresenter.unregister();
+        super.onDestroy();
     }
 }

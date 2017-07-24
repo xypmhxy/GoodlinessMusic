@@ -36,16 +36,26 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
         currentMusic = MusicUtils.getRecentMusic();
     }
 
+    public Music getCurrentMusic() {
+        return currentMusic;
+    }
+
     public static PlayManager getInstance(Context context) {
-        return playManager == null ? new PlayManager(context) : playManager;
+        return playManager == null ? playManager = new PlayManager(context) : playManager;
     }
 
     public void setMusicList(List<Music> musics) {
         this.musics = musics;
+        if (currentMusic == null)
+            currentMusic = musics.get(0);
     }
 
     public List<Music> getMusicList() {
         return musics;
+    }
+
+    public boolean isPause() {
+        return isPause;
     }
 
     public void play(Music music) {
@@ -55,12 +65,17 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
             mediaPlayer.prepare();
             mediaPlayer.start();
             currentMusic = music;
+            currentMusic.setPlayTime(System.currentTimeMillis() + "");
+            MusicUtils.insert(currentMusic);
             sendBroadCast();
-            if (currentPosition != -1)
+            isPause = false;
+            if (currentPosition != -1) {
                 return;
+            }
             for (int i = 0; i < musics.size(); i++) {
-                if (musics.get(i).getId() == music.getId())
+                if (musics.get(i).getId() == music.getId()) {
                     currentPosition = i;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,14 +92,15 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
     public void start() {
         if (!mediaPlayer.isPlaying() && isPause)
             mediaPlayer.start();
+        isPause = false;
     }
 
     private void sendBroadCast() {
         if (intent == null) {
             intent = new Intent();
             intent.setAction(MUSIC_INFO);
-            intent.putExtra("music", currentMusic);
         }
+        intent.putExtra("music", currentMusic);
         context.get().sendBroadcast(intent);
     }
 
