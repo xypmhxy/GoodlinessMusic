@@ -23,7 +23,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
     public static final int STATE_PAUSE = 2;
     public static final int STATE_STOP = 3;
     private static PlayManager playManager;
-    private WeakReference<Context> context;
+    private Context context;
     private MediaPlayer mediaPlayer;
     private Music currentMusic;
     private int currentPosition = -1;
@@ -32,7 +32,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
     private Intent intent;
 
     private PlayManager(Context context) {
-        this.context = new WeakReference<Context>(context);
+        this.context = context;
         mediaPlayer = new MediaPlayer();
         currentMusic = MusicUtils.getRecentMusic();
     }
@@ -47,8 +47,8 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
 
     public void setMusicList(List<Music> musics) {
         this.musics = musics;
-        if (currentMusic == null)
-            currentMusic = musics.get(0);
+//        if (currentMusic == null)
+//            currentMusic = musics.get(0);
     }
 
     public List<Music> getMusicList() {
@@ -59,6 +59,10 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
         return isPause;
     }
 
+    public boolean isPlaying(){
+       return mediaPlayer.isPlaying();
+    }
+
     public void play(Music music) {
         try {
             mediaPlayer.reset();
@@ -66,6 +70,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
             mediaPlayer.prepare();
             mediaPlayer.start();
             currentMusic = music;
+            currentMusic.setIsrecentPlay(true);
             currentMusic.setPlayTime(System.currentTimeMillis() + "");
             MusicUtils.insert(currentMusic);
             sendBroadCast(STATE_PLAING);
@@ -98,6 +103,31 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
         sendBroadCast(STATE_PLAING);
     }
 
+    public void last(){
+        if (currentPosition>0)
+            currentPosition-=1;
+        else
+            currentPosition=musics.size()-1;
+        Music music=musics.get(currentPosition);
+        play(music);
+    }
+
+    public void next(){
+        if (currentPosition == musics.size() - 1)
+            currentPosition = 0;
+        else
+            currentPosition++;
+        Music music = musics.get(currentPosition);
+        play(music);
+    }
+
+    public void stop(){
+        mediaPlayer.release();
+        musics=null ;
+        currentMusic=null ;
+        context=null ;
+    }
+
     private void sendBroadCast(int state) {
         if (intent == null) {
             intent = new Intent();
@@ -105,16 +135,12 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
         }
         intent.putExtra(KEY_MUSIC_INFO, currentMusic);
         intent.putExtra(KEY_STATE, state);
-        context.get().sendBroadcast(intent);
+        context.sendBroadcast(intent);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if (currentPosition == musics.size() - 1)
-            currentPosition = 0;
-        else
-            currentPosition++;
-        Music music = musics.get(currentPosition);
-        play(music);
+        if (!mp.isLooping())
+            next();
     }
 }

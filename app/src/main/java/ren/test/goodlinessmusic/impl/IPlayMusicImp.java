@@ -14,23 +14,29 @@ import ren.test.goodlinessmusic.service.MusicService;
 
 public class IPlayMusicImp implements IPlayMusic {
     private MediaControllerCompat mediaControllerCompat;
+    private  PlayManager playManager;
+
 
     public IPlayMusicImp(MediaControllerCompat mediaControllerCompat) {
         this.mediaControllerCompat = mediaControllerCompat;
+        playManager = PlayManager.getInstance(null);
     }
 
     @Override
     public void play(Music music) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(MusicService.KEY_MUSIC_BEAN, music);
-        PlayManager playManager = PlayManager.getInstance(null);
         Music currentMuisc = playManager.getCurrentMusic();
         if (music.getId() != currentMuisc.getId())
             mediaControllerCompat.getTransportControls().playFromMediaId(music.getId() + "", bundle);
         else if (playManager.isPause())
             mediaControllerCompat.getTransportControls().play();
-        else if (!playManager.isPause())
-            mediaControllerCompat.getTransportControls().pause();
+        else if (!playManager.isPause()){
+            if (playManager.isPlaying())
+                mediaControllerCompat.getTransportControls().pause();
+            else
+                mediaControllerCompat.getTransportControls().playFromMediaId(music.getId() + "", bundle);
+        }
     }
 
     @Override
@@ -40,11 +46,11 @@ public class IPlayMusicImp implements IPlayMusic {
 
     @Override
     public void last() {
-
+        playManager.last();
     }
 
     @Override
     public void next() {
-
+        playManager.next();
     }
 }

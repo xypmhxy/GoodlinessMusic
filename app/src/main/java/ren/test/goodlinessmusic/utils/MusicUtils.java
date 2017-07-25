@@ -46,7 +46,11 @@ public class MusicUtils {
         Realm realm = RealmUtils.getDefaultRealm();
         RealmQuery<Music> query = realm.where(Music.class);
         Music music=query.equalTo("isrecentPlay", true).or().equalTo("isrecentPlay", true).findAllSorted("playTime", Sort.DESCENDING).first(null);
+        music=realm.copyFromRealm(music);
         realm.close();
+        if (music==null && !allMusics.isEmpty()) {
+            music=allMusics.get(0);
+        }
         return music;
     }
 

@@ -31,6 +31,7 @@ import ren.test.goodlinessmusic.fragment.SongFragment;
 import ren.test.goodlinessmusic.manager.PlayManager;
 import ren.test.goodlinessmusic.presenter.PlayMusicPresenter;
 import ren.test.goodlinessmusic.service.MusicService;
+import ren.test.goodlinessmusic.utils.MusicUtils;
 import ren.test.goodlinessmusic.view.IPlayMusicView;
 
 public class MainActivity extends AppCompatActivity implements IPlayMusicView {
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         initFragment();
         tabLayout.setupWithViewPager(viewPager);
         startService();
-//        initNotification();
+        initRecentMusic();
     }
 
     /**
@@ -98,8 +99,10 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         bindService(intent, connection, BIND_AUTO_CREATE);
     }
 
-    private void initNotification(){
-//        MusicNotificationManager.getInstance(this);
+    private void initRecentMusic(){
+        Music music= MusicUtils.getRecentMusic();
+        songName.setText(music.getTittle());
+        singer.setText(music.getArtist());
     }
 
     /**
@@ -116,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
 
     @OnClick(R.id.image_play)
     public void onClick(View view) {
-        presenter.play(PlayManager.getInstance(this).getCurrentMusic());
+        Music music=PlayManager.getInstance(this).getCurrentMusic();
+        presenter.play(music);
     }
 
     @Override
@@ -147,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         unbinder.unbind();
         presenter.unregister();
         unbindService(connection);
+        PlayManager.getInstance(this).stop();
         super.onDestroy();
     }
 

@@ -49,18 +49,18 @@ public class MusicService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCreate() {
-        notificationManager=MusicNotificationManager.getInstance(this);
         ComponentName cn = new ComponentName(this.getApplicationContext().getPackageName(),
                 HeadsetButtonReceiver.class.getName());
         sessionCompat=new MediaSessionCompat(this,"com.ren.music");
-        sessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-        sessionCompat.setCallback(new MusicMediaSessionCallbackManager(this,notificationManager));
-        sessionCompat.setActive(true);
         try {
             compat=sessionCompat.getController();
+            notificationManager=MusicNotificationManager.getInstance(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        sessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        sessionCompat.setCallback(new MusicMediaSessionCallbackManager(this,notificationManager));
+        sessionCompat.setActive(true);
         super.onCreate();
     }
 
@@ -68,6 +68,16 @@ public class MusicService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 //        startForeground(230, MusicNotificationManager.getInstance(this).notification);
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        notificationManager.stopService();
+        super.onDestroy();
+    }
+
+    public MediaControllerCompat getCompat() {
+        return compat;
     }
 
     public class MusicBinder extends Binder {
