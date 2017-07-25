@@ -1,32 +1,21 @@
 package ren.test.goodlinessmusic.service;
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 
-import java.util.List;
-
-import ren.test.goodlinessmusic.activity.MainActivity;
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.broadcast.HeadsetButtonReceiver;
 import ren.test.goodlinessmusic.manager.MusicMediaSessionCallbackManager;
 import ren.test.goodlinessmusic.manager.MusicNotificationManager;
 import ren.test.goodlinessmusic.manager.PlayManager;
-import ren.test.goodlinessmusic.utils.MusicUtils;
 
 
 /**
@@ -72,7 +61,7 @@ public class MusicService extends Service {
 
     @Override
     public void onDestroy() {
-        notificationManager.stopService();
+//        notificationManager.stopService();
         super.onDestroy();
     }
 

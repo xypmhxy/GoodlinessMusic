@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">美乐播放器</string>
+    <string name="currentPlay">当前播放</string>
+    <string name="song">天涯情歌</string>
+    <string name="singer">周杰伦</string>
+    <string name="startTime">1:00</string>
+    <string name="endTime">4:36</string>
 </resources>

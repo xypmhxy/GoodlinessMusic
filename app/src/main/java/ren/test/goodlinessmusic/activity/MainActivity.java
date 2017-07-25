@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
     public TextView singer;
     @BindView(R.id.image_play)
     public ImageView playOrPause;
+    @BindView(R.id.play_layout)
+    public RelativeLayout playLayout;
 
     private PlayMusicPresenter presenter;
     private SongFragment songFragment;
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PlayManager.getInstance(this);
         unbinder=ButterKnife.bind(this);
         initFragment();
         tabLayout.setupWithViewPager(viewPager);
@@ -88,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
                 MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
                 setSupportMediaController(binder.getController());
                 presenter = new PlayMusicPresenter(MainActivity.this, getSupportMediaController(),MainActivity.this);
-                Toast.makeText(MainActivity.this, "绑定服务已经启动 " + binder, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "绑定服务已经启动 " + binder, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -117,10 +121,15 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         return super.onKeyDown(keyCode, event);
     }
 
-    @OnClick(R.id.image_play)
+    @OnClick({R.id.image_play,R.id.play_layout})
     public void onClick(View view) {
-        Music music=PlayManager.getInstance(this).getCurrentMusic();
-        presenter.play(music);
+        if (view.getId()==R.id.play_layout){
+            Intent intent=new Intent(this,PlayActivity.class);
+            startActivity(intent);
+        }else if (view.getId()==R.id.image_play){
+            Music music=PlayManager.getInstance(this).getCurrentMusic();
+            presenter.play(music);
+        }
     }
 
     @Override
@@ -151,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements IPlayMusicView {
         unbinder.unbind();
         presenter.unregister();
         unbindService(connection);
-        PlayManager.getInstance(this).stop();
+//        PlayManager.getInstance(this).stop();
         super.onDestroy();
     }
 

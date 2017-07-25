@@ -20,7 +20,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.Splash"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+           >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +31,10 @@
 
         <activity android:name=".activity.MainActivity" android:launchMode="singleTask" />
 
+        <activity android:name=".activity.PlayActivity"/>
+
         <service android:name=".service.MusicService"/>
+
         <receiver
             android:name=".broadcast.HeadsetButtonReceiver">
             <intent-filter>

@@ -19,7 +19,6 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ren.test.goodlinessmusic.R;
-import ren.test.goodlinessmusic.manager.PlayManager;
 import ren.test.goodlinessmusic.utils.MusicUtils;
 
 /**
@@ -76,14 +75,14 @@ public class Splash extends Activity {
                 MusicUtils.loadAlbum();
                 intentMainActivity();
             }
-        }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+
     }
 
     /**
      * 跳转到主页面
      */
     private void intentMainActivity() {
-        PlayManager.getInstance(this);
         Intent intent = new Intent(Splash.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

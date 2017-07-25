@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:padding="15dp"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:text="@string/currentPlay"/>
+
+    <ImageView
+        android:id="@+id/img_head_play"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/big_head"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"/>
+    <TextView
+    android:id="@+id/text_song_play"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:layout_gravity="center"
+    android:textColor="@color/white"
+    android:textSize="18sp"
+    android:text="@string/song"/>
+
+   <TextView
+    android:id="@+id/text_singer_play"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_gravity="center"
+    android:textColor="@color/white"
+    android:textSize="15sp"
+    android:text="@string/singer"
+    />
+
+    <RelativeLayout
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:layout_marginTop="20dp"
+        >
+
+        <ImageView
+            android:id="@+id/img_last_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/last_white" />
+
+        <ImageView
+            android:id="@+id/img_pause_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/play_white"/>
+        <ImageView
+            android:id="@+id/img_nex_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/next_white"/>
+    </RelativeLayout>
+
+    <SeekBar
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:maxHeight="3dp"
+        android:id="@+id/seekbar_play"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:progressDrawable="@drawable/seekbar"
+        android:thumb="@drawable/seek_bar"
+        android:progress="20" />
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center" >
+        <TextView
+            android:id="@+id/text_start_time_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:text="@string/startTime"/>
+
+        <TextView
+            android:id="@+id/text_end_time_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:layout_alignParentEnd="true"
+            android:text="@string/endTime"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:padding="10dp"
+            android:layout_marginStart="20dp"
+            android:id="@+id/img_random_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/random_white"/>
+
+        <ImageView
+            android:padding="10dp"
+            android:layout_marginEnd="20dp"
+            android:id="@+id/img_loop_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/loop_white"/>
+    </RelativeLayout>
+</LinearLayout>

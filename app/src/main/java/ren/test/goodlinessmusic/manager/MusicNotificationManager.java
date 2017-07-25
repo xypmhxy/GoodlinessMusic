@@ -1,15 +1,12 @@
 package ren.test.goodlinessmusic.manager;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
 
 import java.lang.ref.WeakReference;
@@ -18,7 +15,6 @@ import ren.test.goodlinessmusic.R;
 import ren.test.goodlinessmusic.activity.MainActivity;
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.broadcast.NotifiClickReceive;
-import ren.test.goodlinessmusic.impl.IPlayMusicImp;
 import ren.test.goodlinessmusic.presenter.PlayMusicPresenter;
 import ren.test.goodlinessmusic.service.MusicService;
 import ren.test.goodlinessmusic.utils.MusicUtils;
@@ -110,7 +106,7 @@ public class MusicNotificationManager implements IPlayMusicView{
         notifactionView.setTextViewText(R.id.text_tittle_notify , music.getTittle());
         notifactionView.setTextViewText(R.id.text_singer_notify , music.getArtist());
         notifactionView.setImageViewUri(R.id.img_head_notify, Uri.parse(music.getBigPic()));
-        notifactionView.setImageViewResource(R.id.img_play_notify , R.drawable.pause);
+        notifactionView.setImageViewResource(R.id.img_play_notify , R.drawable.pause_white);
         showNotifi();
     }
 

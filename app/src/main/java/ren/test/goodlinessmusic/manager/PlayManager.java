@@ -3,9 +3,9 @@ package ren.test.goodlinessmusic.manager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Message;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import ren.test.goodlinessmusic.beans.Music;
@@ -30,11 +30,13 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
     private List<Music> musics;
     private boolean isPause;
     private Intent intent;
+    private HandleManager handleManager;
 
     private PlayManager(Context context) {
         this.context = context;
         mediaPlayer = new MediaPlayer();
         currentMusic = MusicUtils.getRecentMusic();
+        handleManager=HandleManager.getInstance();
     }
 
     public Music getCurrentMusic() {
@@ -65,10 +67,12 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
 
     public void play(Music music) {
         try {
+            handleManager.removeCallbacks(r);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getUrl());
             mediaPlayer.prepare();
             mediaPlayer.start();
+            handleManager.post(r);
             currentMusic = music;
             currentMusic.setIsrecentPlay(true);
             currentMusic.setPlayTime(System.currentTimeMillis() + "");
@@ -93,6 +97,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
             mediaPlayer.pause();
             isPause = true;
             sendBroadCast(STATE_PAUSE);
+            handleManager.removeCallbacks(r);
         }
     }
 
@@ -101,6 +106,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
             mediaPlayer.start();
         isPause = false;
         sendBroadCast(STATE_PLAING);
+        handleManager.post(r);
     }
 
     public void last(){
@@ -122,11 +128,33 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
     }
 
     public void stop(){
+        handleManager.removeCallbacks(r);
         mediaPlayer.release();
         musics=null ;
         currentMusic=null ;
         context=null ;
+        playManager=null;
     }
+
+    public void seekTo(int position){
+        mediaPlayer.seekTo(position);
+    }
+
+    public int getCurrentPosition(){
+        return  mediaPlayer.getCurrentPosition();
+    }
+
+    private Runnable r = new Runnable() {
+        @Override
+        public void run() {
+            Message msg = new Message();
+            msg.what = HandleManager.CURRENT_POSITION;
+            msg.arg1 = mediaPlayer.getCurrentPosition();//当前播放位置
+            msg.arg2 = mediaPlayer.getDuration();
+            handleManager.sendMessage(msg);
+            handleManager.postDelayed(r, 500);
+        }
+    };
 
     private void sendBroadCast(int state) {
         if (intent == null) {

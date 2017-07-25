@@ -4,30 +4,16 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Binder;
-import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import io.realm.Sort;
 import ren.test.goodlinessmusic.beans.Album;
 import ren.test.goodlinessmusic.beans.Artist;
@@ -46,7 +32,8 @@ public class MusicUtils {
         Realm realm = RealmUtils.getDefaultRealm();
         RealmQuery<Music> query = realm.where(Music.class);
         Music music=query.equalTo("isrecentPlay", true).or().equalTo("isrecentPlay", true).findAllSorted("playTime", Sort.DESCENDING).first(null);
-        music=realm.copyFromRealm(music);
+        if (music!=null)
+            music=realm.copyFromRealm(music);
         realm.close();
         if (music==null && !allMusics.isEmpty()) {
             music=allMusics.get(0);
