@@ -51,7 +51,7 @@ public class MusicMediaSessionCallbackManager extends MediaSessionCompat.Callbac
 
     @Override
     public void onSeekTo(long pos) {
-        super.onSeekTo(pos);
+        playManager.seekTo((int) pos);
     }
 
     @Override

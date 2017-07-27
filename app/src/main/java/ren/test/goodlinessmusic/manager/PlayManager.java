@@ -35,6 +35,7 @@ public class PlayManager implements MediaPlayer.OnCompletionListener {
     private PlayManager(Context context) {
         this.context = context;
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnCompletionListener(this);
         currentMusic = MusicUtils.getRecentMusic();
         handleManager=HandleManager.getInstance();
     }

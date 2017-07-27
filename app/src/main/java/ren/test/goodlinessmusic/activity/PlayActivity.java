@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import ren.test.goodlinessmusic.R;
 import ren.test.goodlinessmusic.beans.Music;
 import ren.test.goodlinessmusic.manager.HandleManager;
@@ -50,6 +51,8 @@ public class PlayActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     TextView startTimeView;
     @BindView(R.id.text_end_time_play)
     TextView endTimeView;
+    @BindView(R.id.img_pause_play)
+    ImageView playOrPause;
 
     private Music music;
     private PlayMusicPresenter presenter;
@@ -100,6 +103,10 @@ public class PlayActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         Picasso.with(this).load(music.getBigPic()).placeholder(R.drawable.big_head).error(R.drawable.big_head).into(headImage);
         song.setText(music.getTittle());
         singer.setText(music.getArtist());
+        if (PlayManager.getInstance(this).isPlaying())
+            playOrPause.setImageResource(R.drawable.pause_white);
+        else
+            playOrPause.setImageResource(R.drawable.play_white);
         seekBar.setOnSeekBarChangeListener(this);
         handleManager=HandleManager.getInstance();
         handleManager.setOnHandleMessageListener(this);
@@ -107,9 +114,9 @@ public class PlayActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (fromUser){
+        if (fromUser)
             getSupportMediaController().getTransportControls().seekTo(progress);
-        }
+
     }
 
     @Override
@@ -122,14 +129,28 @@ public class PlayActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     }
 
-    @Override
-    public void onPlay(Music music) {
+    @OnClick({R.id.img_last_play,R.id.img_pause_play,R.id.img_nex_play})
+    public void onClick(View view){
+        if (view.getId()==R.id.img_last_play)
+            presenter.last();
+        else if (view.getId()==R.id.img_pause_play)
+            presenter.play(PlayManager.getInstance(this).getCurrentMusic());
+        else if (view.getId()==R.id.img_nex_play)
+            presenter.next();
 
     }
 
     @Override
-    public void onPause_() {
+    public void onPlay(Music music) {
+        Picasso.with(this).load(music.getBigPic()).placeholder(R.drawable.big_head).error(R.drawable.big_head).into(headImage);
+        song.setText(music.getTittle());
+        singer.setText(music.getArtist());
+        playOrPause.setImageResource(R.drawable.pause_white);
+    }
 
+    @Override
+    public void onPause_() {
+        playOrPause.setImageResource(R.drawable.play_white);
     }
 
     @Override

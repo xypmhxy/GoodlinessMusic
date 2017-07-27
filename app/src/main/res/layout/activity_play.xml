@@ -64,6 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/play_white"/>
+
         <ImageView
             android:id="@+id/img_nex_play"
             android:layout_width="wrap_content"
